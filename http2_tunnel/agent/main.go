@@ -3,12 +3,14 @@ package main
 import (
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"gotunnels/router"
 	"io"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/hashicorp/yamux"
 	"golang.org/x/net/http2"
@@ -53,7 +55,16 @@ func Listen(managerAddr string) (net.Listener, error) {
 }
 
 func main() {
-	l, err := Listen("127.0.0.1:9090")
+	if len(os.Args) != 2 {
+		fmt.Println("Usage: agent <IP_ADDRESS>")
+		os.Exit(1)
+	}
+	ip := os.Args[1]
+	if net.ParseIP(ip) == nil {
+		log.Fatal("Invalid IP address: ", ip)
+	}
+
+	l, err := Listen(ip + ":9090")
 	if err != nil {
 		log.Fatal(err)
 	}
