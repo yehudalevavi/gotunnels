@@ -1,6 +1,6 @@
 module gotunnels
 
-go 1.22
+go 1.22.0
 
 require (
 	github.com/hashicorp/yamux v0.1.1
