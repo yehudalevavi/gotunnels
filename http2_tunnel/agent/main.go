@@ -46,25 +46,17 @@ func TunnelDial(managerAddr string) (io.ReadWriteCloser, error) {
 }
 
 func Listen(managerAddr string) (net.Listener, error) {
-	tunnel, err := TunnelDial(managerAddr)
+	connection, err := TunnelDial(managerAddr)
 	if err != nil {
 		return nil, err
 	}
 
-	return yamux.Client(tunnel, nil)
+	return yamux.Client(connection, nil)
 }
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: agent <IP_ADDRESS>")
-		os.Exit(1)
-	}
-	ip := os.Args[1]
-	if net.ParseIP(ip) == nil {
-		log.Fatal("Invalid IP address: ", ip)
-	}
-
-	l, err := Listen(ip + ":9090")
+	ip := getIpFromCli()
+	l, err := Listen(ip.String() + ":9090")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,4 +65,17 @@ func main() {
 
 	err = http.Serve(l, nil)
 	log.Fatal(err)
+}
+
+func getIpFromCli() net.IP {
+	if len(os.Args) != 2 {
+		fmt.Println("Usage: agent <IP_ADDRESS>")
+		os.Exit(1)
+	}
+	ip := net.ParseIP(os.Args[1])
+	if ip == nil {
+		log.Fatal("Invalid IP address: ", ip)
+	}
+
+	return ip
 }

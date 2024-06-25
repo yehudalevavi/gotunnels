@@ -36,7 +36,7 @@ func (c *conn) Close() error {
 }
 
 func main() {
-	rp := &tunnel.Tunnel{}
+	tun := &tunnel.Tunnel{}
 	ctx := context.Background()
 
 	http.HandleFunc("/connect", func(w http.ResponseWriter, r *http.Request) {
@@ -46,14 +46,15 @@ func main() {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		rp.NewConn(newConn(w, r))
+		tun.NewConn(newConn(w, r))
 		<-ctx.Done()
 		fmt.Println("Context canceled, tunnel is down")
 	})
-	http.Handle("/agent/", rp)
+	http.Handle("/agent/", tun)
 
 	go func() {
-		err := http.ListenAndServeTLS(":9090", "./testdata/cert.pem", "./testdata/key.pem", nil)
+		err := http.ListenAndServeTLS(":9090", "./testdata/cert.pem",
+			"./testdata/key.pem", nil)
 		log.Fatal(err)
 	}()
 
