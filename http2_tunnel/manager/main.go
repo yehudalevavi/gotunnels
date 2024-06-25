@@ -50,7 +50,7 @@ func main() {
 		<-ctx.Done()
 		fmt.Println("Context canceled, tunnel is down")
 	})
-	http.Handle("/agent/", tun)
+	http.Handle("/agent", tun)
 
 	go func() {
 		err := http.ListenAndServeTLS(":9090", "./testdata/cert.pem",
