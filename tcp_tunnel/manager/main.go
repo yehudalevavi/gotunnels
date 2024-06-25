@@ -1,13 +1,13 @@
 package main
 
 import (
-	"gotunnels/reverseproxy"
+	"gotunnels/tunnel"
 	"log"
 	"net"
 	"net/http"
 )
 
-func waitForTunnel() *reverseproxy.ReverseProxy {
+func waitForConnection() *tunnel.Tunnel {
 	l, err := net.Listen("tcp", ":8090")
 	if err != nil {
 		log.Fatal(err)
@@ -19,13 +19,13 @@ func waitForTunnel() *reverseproxy.ReverseProxy {
 	}
 	log.Printf("Tunnel established with host %s", conn.RemoteAddr())
 
-	return reverseproxy.NewReverseProxy(conn)
+	return tunnel.NewTunnel(conn)
 }
 
 func main() {
-	rp := waitForTunnel()
+	tunnel := waitForConnection()
 
-	http.Handle("/app/", rp)
+	http.Handle("/app/", tunnel)
 	err := http.ListenAndServe(":9090", nil)
 	log.Fatal(err)
 }

@@ -1,4 +1,4 @@
-package reverseproxy
+package tunnel
 
 import (
 	"context"
@@ -14,34 +14,34 @@ import (
 	"github.com/hashicorp/yamux"
 )
 
-type ReverseProxy struct {
+type Tunnel struct {
 	session *yamux.Session
 	m       sync.Mutex
 }
 
-func NewReverseProxy(conn io.ReadWriteCloser) *ReverseProxy {
-	rp := &ReverseProxy{}
+func NewTunnel(conn io.ReadWriteCloser) *Tunnel {
+	rp := &Tunnel{}
 
 	rp.NewConn(conn)
 
 	return rp
 }
 
-func (rp *ReverseProxy) NewConn(conn io.ReadWriteCloser) {
+func (t *Tunnel) NewConn(conn io.ReadWriteCloser) {
 	session, err := yamux.Server(conn, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	rp.m.Lock()
-	rp.session = session
-	rp.m.Unlock()
+	t.m.Lock()
+	t.session = session
+	t.m.Unlock()
 }
 
-func (rp *ReverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	rp.m.Lock()
-	session := rp.session
-	rp.m.Unlock()
+func (t *Tunnel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	t.m.Lock()
+	session := t.session
+	t.m.Unlock()
 
 	if session == nil {
 		http.Error(w, "Tunnel is not up", http.StatusInternalServerError)

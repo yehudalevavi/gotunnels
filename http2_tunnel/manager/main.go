@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"gotunnels/reverseproxy"
+	"gotunnels/tunnel"
 	"log"
 	"net/http"
 )
@@ -36,7 +36,7 @@ func (c *conn) Close() error {
 }
 
 func main() {
-	rp := &reverseproxy.ReverseProxy{}
+	rp := &tunnel.Tunnel{}
 	ctx := context.Background()
 
 	http.HandleFunc("/connect", func(w http.ResponseWriter, r *http.Request) {
