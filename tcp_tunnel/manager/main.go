@@ -8,7 +8,7 @@ import (
 )
 
 func waitForTunnel() *reverseproxy.ReverseProxy {
-	l, err := net.Listen("tcp", "127.0.0.1:8090")
+	l, err := net.Listen("tcp", ":8090")
 	if err != nil {
 		log.Fatal(err)
 	}
