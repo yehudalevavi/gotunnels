@@ -57,7 +57,7 @@ func (t *Tunnel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Rewrite: func(pr *httputil.ProxyRequest) {
 			target := &url.URL{Scheme: "http", Host: "manager RP", Path: "/"}
 			pr.SetURL(target)
-			pr.Out.URL.Path = strings.TrimPrefix(pr.In.URL.Path, "/app")
+			pr.Out.URL.Path = strings.TrimPrefix(pr.In.URL.Path, "/agent")
 		},
 	}
 	httpRP.ServeHTTP(w, r)
