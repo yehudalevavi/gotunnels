@@ -42,11 +42,10 @@ func (t *Tunnel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.m.Lock()
 	session := t.session
 	t.m.Unlock()
-
 	if session == nil {
 		http.Error(w, "Tunnel is not up", http.StatusInternalServerError)
 		return
-	}
+	} // empty session means no tunnel established
 
 	transport := &http.Transport{
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
@@ -56,7 +55,7 @@ func (t *Tunnel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	httpRP := &httputil.ReverseProxy{
 		Transport: transport,
 		Rewrite: func(pr *httputil.ProxyRequest) {
-			target := &url.URL{Scheme: "http", Host: "yamux", Path: "/"}
+			target := &url.URL{Scheme: "http", Host: "manager RP", Path: "/"}
 			pr.SetURL(target)
 			pr.Out.URL.Path = strings.TrimPrefix(pr.In.URL.Path, "/app")
 		},
