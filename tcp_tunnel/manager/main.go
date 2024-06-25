@@ -23,9 +23,9 @@ func waitForConnection() *tunnel.Tunnel {
 }
 
 func main() {
-	tunnel := waitForConnection()
+	tun := waitForConnection()
 
-	http.Handle("/agent/", tunnel)
+	http.Handle("/agent/", tun)
 	err := http.ListenAndServe(":9090", nil)
 	log.Fatal(err)
 }

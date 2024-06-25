@@ -21,16 +21,8 @@ func Listen(managerAddr string) (net.Listener, error) {
 }
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: agent <IP_ADDRESS>")
-		os.Exit(1)
-	}
-	ip := os.Args[1]
-	if net.ParseIP(ip) == nil {
-		log.Fatal("Invalid IP address: ", ip)
-	}
-
-	l, err := Listen(ip + ":8090")
+	ip := getIpFromCli()
+	l, err := Listen(ip.String() + ":8090")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,4 +31,17 @@ func main() {
 
 	err = http.Serve(l, nil)
 	log.Fatal(err)
+}
+
+func getIpFromCli() net.IP {
+	if len(os.Args) != 2 {
+		fmt.Println("Usage: agent <IP_ADDRESS>")
+		os.Exit(1)
+	}
+	ip := net.ParseIP(os.Args[1])
+	if ip == nil {
+		log.Fatal("Invalid IP address: ", ip)
+	}
+
+	return ip
 }
